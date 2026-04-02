@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏘️ Sistema de Administración de Condominios
 
-## Getting Started
+Sistema web desarrollado para la gestión administrativa del 
+Conjunto Habitacional San Felipe, reemplazando el control 
+manual en Excel por una plataforma digital centralizada.
 
-First, run the development server:
+## 🛠️ Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Frontend**: Next.js 14 + TypeScript
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **Estilos**: Tailwind CSS
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Funcionalidades
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 🔐 Autenticación con roles (admin / vecino)
+- 📊 Matriz de pagos tipo Excel por casa y mes
+- 💰 Registro de alícuotas, parqueaderos y conceptos especiales
+- 📄 Gestión de comprobantes y recibos
+- 📋 Liquidación mensual (ingresos, egresos, saldo)
+- 👤 Portal del vecino — pagos, deudas y recibos propios
+- 📢 Cartelera de documentos y avisos generales
+- 🤖 Predicción de morosos con Machine Learning *(en desarrollo)*
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Instalación
 
-## Learn More
+1. Clona el repositorio
+   git clone https://github.com/eliz121/conjunto-app.git
 
-To learn more about Next.js, take a look at the following resources:
+2. Instala dependencias
+   npm install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Configura variables de entorno
+   cp .env.example .env.local
+   Credenciales de Supabase
+  
+5. Corre el proyecto
+   npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 👥 Roles
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Rol | Acceso |
+|-----|--------|
+| Admin | Dashboard completo, registro de pagos y egresos |
+| Vecino | Sus pagos, deudas y documentos generales |
