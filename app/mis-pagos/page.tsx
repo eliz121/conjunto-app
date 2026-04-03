@@ -88,17 +88,24 @@ export default function MisPagos() {
             </p>
           )}
         </div>
-        <button
-          onClick={async () => {
-            await supabase.auth.signOut()
-            router.push("/login")
-          }}
-          className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 text-gray-600 text-sm"
-        >
-          Cerrar sesión
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => router.push("/documentos")}
+            className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 text-gray-600 text-sm"
+          >
+            📢 Cartelera
+          </button>
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut()
+              router.push("/login")
+            }}
+            className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 text-gray-600 text-sm"
+          >
+            Cerrar sesión
+          </button>
+        </div>
       </div>
-
       {/* Selector año */}
       <div className="flex gap-2 mb-6">
         {[2023, 2024, 2025, 2026].map(a => (

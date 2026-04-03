@@ -1,6 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = "https://wccjsifbnbdabsdvnunj.supabase.co"
-const supabaseKey = "sb_publishable_X7r6VKN1AzCD66_sjE7Atw_VhYimtNN"
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,      // 👈 guardar sesión
+    autoRefreshToken: true,    // 👈 renovar token automático
+    storageKey: "condominio",  // 👈 clave en localStorage
+  }
+})

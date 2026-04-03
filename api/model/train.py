@@ -8,19 +8,41 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.preprocessing import StandardScaler
 import os
+import joblib
 from dotenv import load_dotenv
 
 load_dotenv()
 
 supabase = create_client(
     os.getenv("SUPABASE_URL"),
-    os.getenv("SUPABASE_KEY")
+    os.getenv("SUPABASE_SERVICE_KEY")  # 👈 cambio aquí
 )
 
 def obtener_datos():
+    # Traer todos los pagos sin límite
     pagos = supabase.table("pagos").select("*").execute().data
+    
+    # Paginar para traer todos
+    todos_pagos = []
+    offset = 0
+    while True:
+        lote = supabase.table("pagos").select("*").range(offset, offset + 999).execute().data
+        if not lote:
+            break
+        todos_pagos.extend(lote)
+        offset += 1000
+        print(f"  Cargados {len(todos_pagos)} pagos...")
+        if len(lote) < 1000:
+            break
+
     casas = supabase.table("casas").select("*").execute().data
-    return pd.DataFrame(pagos), pd.DataFrame(casas)
+
+    df_pagos = pd.DataFrame(todos_pagos) if todos_pagos else pd.DataFrame(
+        columns=["casa_id", "mes", "anio", "valor", "estado", "concepto"]
+    )
+    df_casas = pd.DataFrame(casas)
+
+    return df_pagos, df_casas
 
 def construir_features(df_pagos, df_casas):
     features = []
@@ -28,34 +50,25 @@ def construir_features(df_pagos, df_casas):
     for casa in df_casas.itertuples():
         pagos_casa = df_pagos[df_pagos["casa_id"] == casa.id]
 
-        # Total pagos realizados
         total_pagos = len(pagos_casa)
 
-        # Total meses únicos pagados
-        meses_pagados = pagos_casa["mes"].nunique() if total_pagos > 0 else 0
+        # Contar anio+mes únicos de alícuotas
+        if total_pagos > 0:
+            pagos_alicuota = pagos_casa[pagos_casa["concepto"] == "Alícuota"]
+            meses_pagados = len(pagos_alicuota[["anio", "mes"]].drop_duplicates())
+        else:
+            meses_pagados = 0
 
-        # Años únicos con pagos
         anios_pagados = pagos_casa["anio"].nunique() if total_pagos > 0 else 0
-
-        # Promedio de valor pagado
         promedio_valor = pagos_casa["valor"].mean() if total_pagos > 0 else 0
-
-        # Total pagado
         total_valor = pagos_casa["valor"].sum() if total_pagos > 0 else 0
-
-        # Tiene parqueadero
         tiene_parqueadero = 1 if casa.tiene_parqueadero else 0
-
-        # Pagos pendientes
         pendientes = len(pagos_casa[pagos_casa["estado"] == "pendiente"]) if total_pagos > 0 else 0
 
-        # Ratio de cumplimiento — pagados vs total esperado
-        # Esperado: meses desde 2018 hasta 2026 = ~96 meses
-        meses_esperados = 96
+        # 2015 a 2026 = 132 meses esperados
+        meses_esperados = 132
         ratio_cumplimiento = meses_pagados / meses_esperados
-
-        # Etiqueta moroso — si tiene menos del 50% de cumplimiento
-        es_moroso = 1 if ratio_cumplimiento < 0.5 else 0
+        es_moroso = 1 if ratio_cumplimiento < 0.7 else 0
 
         features.append({
             "casa_id": casa.id,
@@ -124,3 +137,10 @@ if __name__ == "__main__":
     rf, lr, kmeans, scaler, df_resultado = entrenar_modelos(df_features)
 
     print("\n✅ Listo!")
+
+    os.makedirs("model/saved", exist_ok=True)
+    joblib.dump(rf, "model/saved/random_forest.pkl")
+    joblib.dump(lr, "model/saved/logistic_regression.pkl")
+    joblib.dump(kmeans, "model/saved/kmeans.pkl")
+    joblib.dump(scaler, "model/saved/scaler.pkl")
+    print("💾 Modelos guardados!")

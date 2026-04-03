@@ -139,6 +139,15 @@ export default function Egresos() {
         >
           ← Volver al Dashboard
         </button>
+        <button
+          onClick={async () => {
+            await supabase.auth.signOut()
+            router.push("/login")
+          }}
+          className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-gray-600"
+        >
+          Cerrar sesión
+        </button>
       </div>
 
       {/* Filtros */}

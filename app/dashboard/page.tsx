@@ -22,6 +22,8 @@ export default function Dashboard() {
   const [casas, setCasas] = useState<any[]>([])
   const [pagos, setPagos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [alicuota, setAlicuota] = useState(18)
+  const [parqueadero, setParqueadero] = useState(2)
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false)
@@ -176,10 +178,31 @@ export default function Dashboard() {
             🏠 Gestionar Casas
           </button>
           <button
+            onClick={() => router.push("/egresos")}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
+          >
+            💸 Egresos
+          </button>
+          <button
             onClick={() => router.push("/liquidacion")}
             className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
           >
             📋 Liquidación
+          </button>
+          <button
+            onClick={() => router.push("/prediccion")}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
+          >
+            🤖 Predicción
+          </button>
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut()
+              router.push("/login")
+            }}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-gray-600"
+          >
+            Cerrar sesión
           </button>
         </div>
       </div>
