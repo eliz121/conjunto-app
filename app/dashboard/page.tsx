@@ -67,6 +67,18 @@ export default function Dashboard() {
         .from("pagos")
         .select("*")
         .eq("anio", anio)
+      
+      // Cargar configuración
+      const { data: config } = await supabase
+        .from("configuracion")
+        .select("*")
+
+      if (config) {
+        const a = config.find(c => c.clave === "alicuota")
+        const p = config.find(c => c.clave === "parqueadero")
+        if (a) setAlicuota(parseFloat(a.valor))
+        if (p) setParqueadero(parseFloat(p.valor))
+      }
 
       setCasas(casasData || [])
       setPagos(pagosData || [])
@@ -90,7 +102,8 @@ export default function Dashboard() {
     setModalConcepto(concepto)
     setModalValor(
       pagoExistente?.valor?.toString() ||
-      (concepto === "Alícuota" ? "18" : concepto === "Parqueadero" ? "2" : "")
+      (concepto === "Alícuota" ? alicuota.toString() : 
+      concepto === "Parqueadero" ? parqueadero.toString() : "")
     )
     setModalRecibo(pagoExistente?.numero_recibo || "")
     setModalArchivo(null)

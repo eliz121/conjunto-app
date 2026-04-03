@@ -14,6 +14,8 @@ export default function MisPagos() {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<"pagados" | "pendientes">("pagados")
   const [anio, setAnio] = useState(new Date().getFullYear())
+  const [alicuota, setAlicuota] = useState(18)
+  const [parqueadero, setParqueadero] = useState(2)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +51,18 @@ export default function MisPagos() {
         .eq("casa_id", usuario.casa_id)
         .eq("anio", anio)
         .order("created_at", { ascending: false })
+
+      // Cargar configuración
+      const { data: config } = await supabase
+        .from("configuracion")
+        .select("*")
+
+      if (config) {
+        const a = config.find(c => c.clave === "alicuota")
+        const p = config.find(c => c.clave === "parqueadero")
+        if (a) setAlicuota(parseFloat(a.valor))
+        if (p) setParqueadero(parseFloat(p.valor))
+      }
 
       setPagos(pagosData || [])
       setLoading(false)
