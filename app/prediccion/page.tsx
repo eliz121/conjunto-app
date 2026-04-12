@@ -25,7 +25,7 @@ export default function Prediccion() {
   useEffect(() => {
     const fetchPrediccion = async () => {
       setLoading(true)
-      const res = await fetch("http://localhost:8000/prediccion")
+      const res = await fetch("https://conjunto-api.onrender.com/prediccion")
       const data = await res.json()
       setDatos(data)
       setLoading(false)
