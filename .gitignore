@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# modelos entrenados
+api/model/saved/
+
+# csvs con datos personales
+api/pagos_historicos.csv
+api/propietarios.csv
+
+# pycache
+__pycache__/
+api/__pycache__/
+api/model/__pycache__/
