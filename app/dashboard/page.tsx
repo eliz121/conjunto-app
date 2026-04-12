@@ -13,7 +13,7 @@ const CONCEPTOS_ESPECIALES = [
   "Pintura","Asamblea","Cámaras","Controles Peatonales"
 ]
 
-const ANIOS = [2022, 2023, 2024, 2025, 2026]
+const ANIOS = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
 
 export default function Dashboard() {
   const router = useRouter()
@@ -35,6 +35,7 @@ export default function Dashboard() {
   const [modalArchivo, setModalArchivo] = useState<File | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
   const [modalPagoExistente, setModalPagoExistente] = useState<any>(null)
+  const [modalEstado, setModalEstado] = useState("pagado")
 
   // Verificar admin
   useEffect(() => {
@@ -67,8 +68,7 @@ export default function Dashboard() {
         .from("pagos")
         .select("*")
         .eq("anio", anio)
-      
-      // Cargar configuración
+
       const { data: config } = await supabase
         .from("configuracion")
         .select("*")
@@ -95,6 +95,20 @@ export default function Dashboard() {
     )
   }
 
+  const colorCelda = (pago: any) => {
+    if (!pago) return "text-gray-300 hover:bg-blue-50 hover:text-blue-400"
+    if (pago.estado === "acuerdo") return "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+    if (pago.estado === "exento") return "bg-gray-100 text-gray-500 hover:bg-gray-200"
+    return "bg-green-100 text-green-700 hover:bg-green-200"
+  }
+
+  const iconoCelda = (pago: any) => {
+    if (!pago) return "·"
+    if (pago.estado === "acuerdo") return "🤝"
+    if (pago.estado === "exento") return "⚪"
+    return "●"
+  }
+
   const abrirModal = (casa: any, mes: string, concepto: string) => {
     const pagoExistente = getPago(casa.id, mes, concepto)
     setModalCasa(casa)
@@ -102,12 +116,13 @@ export default function Dashboard() {
     setModalConcepto(concepto)
     setModalValor(
       pagoExistente?.valor?.toString() ||
-      (concepto === "Alícuota" ? alicuota.toString() : 
-      concepto === "Parqueadero" ? parqueadero.toString() : "")
+      (concepto === "Alícuota" ? alicuota.toString() :
+       concepto === "Parqueadero" ? parqueadero.toString() : "")
     )
     setModalRecibo(pagoExistente?.numero_recibo || "")
     setModalArchivo(null)
     setModalPagoExistente(pagoExistente || null)
+    setModalEstado(pagoExistente?.estado || "pagado")
     setModalOpen(true)
   }
 
@@ -142,7 +157,7 @@ export default function Dashboard() {
         valor: parseFloat(modalValor),
         numero_recibo: modalRecibo,
         archivo_url: archivoUrl,
-        estado: "pagado"
+        estado: modalEstado
       }).eq("id", modalPagoExistente.id)
     } else {
       await supabase.from("pagos").insert({
@@ -153,7 +168,7 @@ export default function Dashboard() {
         valor: parseFloat(modalValor),
         numero_recibo: modalRecibo,
         archivo_url: archivoUrl,
-        estado: "pagado"
+        estado: modalEstado
       })
     }
 
@@ -184,50 +199,36 @@ export default function Dashboard() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Dashboard Administración</h1>
         <div className="flex gap-2">
-          <button
-            onClick={() => router.push("/admin/casas")}
-            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
-          >
+          <button onClick={() => router.push("/admin/casas")}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-sm text-gray-600">
             🏠 Gestionar Casas
           </button>
-          <button
-            onClick={() => router.push("/egresos")}
-            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
-          >
+          <button onClick={() => router.push("/egresos")}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-sm text-gray-600">
             💸 Egresos
           </button>
-          <button
-            onClick={() => router.push("/liquidacion")}
-            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-          >
+          <button onClick={() => router.push("/documentos")}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-sm text-gray-600">
+            📢 Cartelera
+          </button>
+          <button onClick={() => router.push("/prediccion")}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-sm text-gray-600">
+            🤖 Predicción
+          </button>
+          <button onClick={() => router.push("/liquidacion")}
+            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 text-sm">
             📋 Liquidación
           </button>
           <button
-            onClick={() => router.push("/documentos")}
-            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
-          >
-            📢 Cartelera
-          </button>
-          <button
-            onClick={() => router.push("/prediccion")}
-            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
-          >
-            🤖 Predicción
-          </button>
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut()
-              router.push("/login")
-            }}
-            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-gray-600"
-          >
+            onClick={async () => { await supabase.auth.signOut(); router.push("/login") }}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-sm text-gray-600">
             Cerrar sesión
           </button>
         </div>
       </div>
 
       {/* Selector de año */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
         {ANIOS.map(a => (
           <button
             key={a}
@@ -243,7 +244,7 @@ export default function Dashboard() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 mb-6 border-b border-gray-200">
+      <div className="flex mb-6 border-b border-gray-200">
         <button
           onClick={() => setTab("alicuotas")}
           className={`px-6 py-3 font-medium transition-colors
@@ -262,6 +263,22 @@ export default function Dashboard() {
         >
           Conceptos Especiales
         </button>
+      </div>
+
+      {/* Leyenda */}
+      <div className="flex gap-4 mb-4 text-xs text-gray-500">
+        <span className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-full bg-green-300 inline-block"/> Pagado
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-full bg-yellow-300 inline-block"/> Acuerdo
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-full bg-gray-300 inline-block"/> Exento (Directiva)
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-3 h-3 rounded-full bg-white border border-gray-200 inline-block"/> Sin pago
+        </span>
       </div>
 
       {loading ? (
@@ -296,12 +313,9 @@ export default function Dashboard() {
                           <td
                             key={mes}
                             onClick={() => abrirModal(casa, mes, "Alícuota")}
-                            className={`border border-gray-200 px-2 py-1 text-center cursor-pointer transition-colors
-                              ${pago
-                                ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                : "text-gray-300 hover:bg-blue-50 hover:text-blue-400"}`}
+                            className={`border border-gray-200 px-2 py-1 text-center cursor-pointer transition-colors ${colorCelda(pago)}`}
                           >
-                            {pago ? "●" : "·"}
+                            {iconoCelda(pago)}
                           </td>
                         )
                       })}
@@ -309,11 +323,9 @@ export default function Dashboard() {
                         <td
                           onClick={() => abrirModal(casa, `${anio}`, "Parqueadero")}
                           className={`border border-gray-200 px-2 py-1 text-center cursor-pointer transition-colors
-                            ${getPago(casa.id, `${anio}`, "Parqueadero")
-                              ? "bg-green-100 text-green-700 hover:bg-green-200"
-                              : "text-gray-300 hover:bg-blue-50 hover:text-blue-400"}`}
+                            ${colorCelda(getPago(casa.id, `${anio}`, "Parqueadero"))}`}
                         >
-                          {getPago(casa.id, `${anio}`, "Parqueadero") ? "●" : "·"}
+                          {iconoCelda(getPago(casa.id, `${anio}`, "Parqueadero"))}
                         </td>
                       ) : (
                         <td className="border border-gray-200 px-2 py-1 text-center text-gray-200">—</td>
@@ -353,10 +365,7 @@ export default function Dashboard() {
                           <td
                             key={concepto}
                             onClick={() => abrirModal(casa, `${anio}`, concepto)}
-                            className={`border border-gray-200 px-2 py-1 text-center cursor-pointer transition-colors
-                              ${pago
-                                ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                : "text-gray-200 hover:bg-blue-50 hover:text-blue-400"}`}
+                            className={`border border-gray-200 px-2 py-1 text-center cursor-pointer transition-colors ${colorCelda(pago)}`}
                           >
                             {pago ? `$${pago.valor}` : "—"}
                           </td>
@@ -401,6 +410,17 @@ export default function Dashboard() {
               onChange={(e) => setModalRecibo(e.target.value)}
               className="border border-gray-200 p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
             />
+
+            {/* Estado del pago */}
+            <select
+              value={modalEstado}
+              onChange={(e) => setModalEstado(e.target.value)}
+              className="border border-gray-200 p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
+            >
+              <option value="pagado">✅ Pagado</option>
+              <option value="acuerdo">🤝 Acuerdo de pago</option>
+              <option value="exento">⚪ Exento (Directiva)</option>
+            </select>
 
             <div className="flex flex-col gap-1">
               <label className="text-sm text-gray-500">Comprobante (opcional)</label>
