@@ -203,6 +203,12 @@ export default function Dashboard() {
             📋 Liquidación
           </button>
           <button
+            onClick={() => router.push("/documentos")}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
+          >
+            📢 Cartelera
+          </button>
+          <button
             onClick={() => router.push("/prediccion")}
             className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
           >
