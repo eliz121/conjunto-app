@@ -211,13 +211,17 @@ export default function Dashboard() {
             className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-sm text-gray-600">
             📢 Cartelera
           </button>
-          <button onClick={() => router.push("/prediccion")}
+          <button onClick={() => router.push("/admin/configuracion")}
             className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-sm text-gray-600">
-            🤖 Predicción
+            ⚙️ Configuración
           </button>
           <button onClick={() => router.push("/liquidacion")}
             className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 text-sm">
             📋 Liquidación
+          </button>
+          <button onClick={() => router.push("/prediccion")}
+            className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-sm text-gray-600">
+            🤖 Predicción
           </button>
           <button
             onClick={async () => { await supabase.auth.signOut(); router.push("/login") }}
