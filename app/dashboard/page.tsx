@@ -459,6 +459,21 @@ export default function Dashboard() {
             </div>
 
             <div className="flex gap-3 mt-2">
+              {modalPagoExistente && (
+                <button
+                  onClick={async () => {
+                    if (!confirm("¿Eliminar este pago?")) return
+                    await supabase.from("pagos").delete().eq("id", modalPagoExistente.id)
+                    const { data: pagosData } = await supabase
+                      .from("pagos").select("*").eq("anio", anio)
+                    setPagos(pagosData || [])
+                    setModalOpen(false)
+                  }}
+                  className="flex-1 border border-red-200 p-3 rounded-lg text-red-500 hover:bg-red-50"
+                >
+                  🗑️ Eliminar
+                </button>
+              )}
               <button
                 onClick={() => setModalOpen(false)}
                 className="flex-1 border border-gray-200 p-3 rounded-lg text-gray-600 hover:bg-gray-50"

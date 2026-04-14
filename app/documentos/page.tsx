@@ -211,33 +211,62 @@ export default function Documentos() {
             <div className="flex gap-8">
 
               {esAdmin && (
-                <div className="w-80">
-                  <h2 className="text-sm font-semibold mb-3">Publicar documento</h2>
+                <div className="w-80 flex-shrink-0">
+                  <h2 className="text-sm font-semibold text-gray-700 mb-3">Publicar documento</h2>
+                  <div className="flex flex-col gap-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
 
-                  <input
-                    placeholder="Título *"
-                    value={titulo}
-                    onChange={(e) => setTitulo(e.target.value)}
-                    className="border p-2 w-full mb-2"
-                  />
+                    <input
+                      placeholder="Título *"
+                      value={titulo}
+                      onChange={(e) => setTitulo(e.target.value)}
+                      className="border border-gray-200 p-3 rounded-lg text-gray-800 text-sm
+                        focus:outline-none focus:ring-2 focus:ring-black bg-white"
+                    />
 
-                  <select
-                    value={tipo}
-                    onChange={(e) => setTipo(e.target.value)}
-                    className="border p-2 w-full mb-2"
-                  >
-                    {TIPOS.map(t => <option key={t}>{t}</option>)}
-                  </select>
+                    <select
+                      value={tipo}
+                      onChange={(e) => setTipo(e.target.value)}
+                      className="border border-gray-200 p-3 rounded-lg text-gray-700 text-sm
+                        focus:outline-none bg-white"
+                    >
+                      {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
 
-                  <input
-                    type="file"
-                    onChange={(e) => setArchivo(e.target.files?.[0] || null)}
-                    className="mb-2"
-                  />
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs text-gray-500 ml-1">Archivo *</label>
+                      <label className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer
+                        transition-colors text-sm
+                        ${archivo 
+                          ? "border-green-300 bg-green-50 text-green-700" 
+                          : "border-gray-200 hover:border-gray-400 text-gray-400"}`}
+                      >
+                        {archivo ? `📄 ${archivo.name}` : "📎 Click para seleccionar archivo"}
+                        <input
+                          type="file"
+                          accept="image/*,application/pdf"
+                          onChange={(e) => setArchivo(e.target.files?.[0] || null)}
+                          className="hidden"
+                        />
+                      </label>
+                      {archivo && (
+                        <button
+                          onClick={() => setArchivo(null)}
+                          className="text-xs text-red-400 hover:text-red-600 text-right"
+                        >
+                          Quitar archivo ×
+                        </button>
+                      )}
+                    </div>
 
-                  <button onClick={handleSubir}>
-                    {guardando ? "Publicando..." : "Publicar"}
-                  </button>
+                    <button
+                      onClick={handleSubir}
+                      disabled={guardando}
+                      className="bg-black text-white p-3 rounded-lg hover:bg-gray-800
+                        disabled:opacity-50 font-medium text-sm"
+                    >
+                      {guardando ? "Publicando..." : "📢 Publicar"}
+                    </button>
+                  </div>
                 </div>
               )}
 
