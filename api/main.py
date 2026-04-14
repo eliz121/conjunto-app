@@ -148,3 +148,20 @@ def clusters():
         }
         for k, v in resumen.items()
     ]
+
+@app.post("/reentrenar")
+def reentrenar():
+    try:
+        import subprocess
+        subprocess.run(["python", "model/train.py"], check=True)
+        
+        # Recargar modelos
+        global rf, lr, kmeans, scaler
+        rf = joblib.load("model/saved/random_forest.pkl")
+        lr = joblib.load("model/saved/logistic_regression.pkl")
+        kmeans = joblib.load("model/saved/kmeans.pkl")
+        scaler = joblib.load("model/saved/scaler.pkl")
+        
+        return {"mensaje": "Modelo reentrenado ✅"}
+    except Exception as e:
+        return {"error": str(e)}
