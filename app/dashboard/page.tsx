@@ -232,20 +232,18 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Selector de año */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {ANIOS.map(a => (
-          <button
-            key={a}
-            onClick={() => setAnio(a)}
-            className={`px-4 py-2 rounded font-medium transition-colors
-              ${anio === a
-                ? "bg-black text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-          >
-            {a}
-          </button>
-        ))}
+      <div className="flex items-center gap-3 mb-6">
+        <label className="text-sm font-medium text-gray-600">Año:</label>
+        <select
+          value={anio}
+          onChange={(e) => setAnio(parseInt(e.target.value))}
+          className="border border-gray-200 px-4 py-2 rounded-lg text-gray-700 
+            font-medium focus:outline-none focus:ring-2 focus:ring-black bg-white"
+        >
+          {ANIOS.map(a => (
+            <option key={a} value={a}>{a}</option>
+          ))}
+        </select>
       </div>
 
       {/* Tabs */}
