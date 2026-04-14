@@ -109,6 +109,13 @@ export default function Documentos() {
       return
     }
 
+    // Notificar a vecinos
+    await fetch("/api/notificar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ titulo, tipo })
+    })
+
     mostrarMensaje("Documento publicado ✅", "success")
     setTitulo("")
     setTipo("Aviso")
