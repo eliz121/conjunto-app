@@ -75,6 +75,17 @@ export default function Prediccion() {
         </button>
         <button
           onClick={async () => {
+            const res = await fetch("https://conjunto-api.onrender.com/reentrenar", 
+              { method: "POST" })
+            const data = await res.json()
+            alert(data.mensaje || data.error)
+          }}
+          className="border border-gray-300 px-4 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
+        >
+          🔄 Reentrenar modelo
+        </button>
+        <button
+          onClick={async () => {
             await supabase.auth.signOut()
             router.push("/login")
           }}
