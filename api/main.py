@@ -150,7 +150,10 @@ def clusters():
     ]
 
 @app.post("/reentrenar")
-def reentrenar():
+def reentrenar(token: str = ""):
+    if token != os.getenv("REENTRENAR_TOKEN"):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=401, detail="No autorizado")
     try:
         import subprocess
         subprocess.run(["python", "model/train.py"], check=True)
