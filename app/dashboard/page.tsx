@@ -117,7 +117,8 @@ export default function Dashboard() {
     setModalValor(
       pagoExistente?.valor?.toString() ||
       (concepto === "Alícuota" ? alicuota.toString() :
-       concepto === "Parqueadero" ? parqueadero.toString() : "")
+      concepto === "Parqueadero" ? parqueadero.toString() :
+      concepto === "Parqueadero 2" ? parqueadero.toString() : "")
     )
     setModalRecibo(pagoExistente?.numero_recibo || "")
     setModalArchivo(null)
@@ -303,6 +304,7 @@ export default function Dashboard() {
                       </th>
                     ))}
                     <th className="border border-gray-200 px-3 py-2 font-medium">Parq.</th>
+                    <th className="border border-gray-200 px-3 py-2 font-medium">Parq. 2</th>
                     <th className="border border-gray-200 px-3 py-2 bg-yellow-50 font-medium">SUBTOTAL</th>
                   </tr>
                 </thead>
@@ -330,6 +332,17 @@ export default function Dashboard() {
                             ${colorCelda(getPago(casa.id, `${anio}`, "Parqueadero"))}`}
                         >
                           {iconoCelda(getPago(casa.id, `${anio}`, "Parqueadero"))}
+                        </td>
+                      ) : (
+                        <td className="border border-gray-200 px-2 py-1 text-center text-gray-200">—</td>
+                      )}
+                      {casa.tiene_parqueadero2 ? (
+                        <td
+                          onClick={() => abrirModal(casa, `${anio}`, "Parqueadero 2")}
+                          className={`border border-gray-200 px-2 py-1 text-center cursor-pointer transition-colors
+                            ${colorCelda(getPago(casa.id, `${anio}`, "Parqueadero 2"))}`}
+                        >
+                          {iconoCelda(getPago(casa.id, `${anio}`, "Parqueadero 2"))}
                         </td>
                       ) : (
                         <td className="border border-gray-200 px-2 py-1 text-center text-gray-200">—</td>
